@@ -2,6 +2,7 @@ backend/secret.php
 /backend/secret.php
 /files/**
 files
+files/
 /files
 ./files
 ./backend/secret.php
