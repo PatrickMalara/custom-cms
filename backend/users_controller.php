@@ -11,10 +11,10 @@ header('Content-Type: application/json');
 
 // get the HTTP method, path and body of the request
 $method     = $_SERVER[ 'REQUEST_METHOD' ];
-$request    = explode( '/', trim($_SERVER['PATH_INFO'],'/') );
+$request    = explode( '/', trim($_SERVER['REQUEST_URI'],'/') );
 $input      = json_decode( file_get_contents('php://input'), true);
 
-$key = htmlspecialchars($request[ count($request) - 1]) == '' ? NULL : htmlspecialchars($request[ count($request) - 1]);
+$key = htmlspecialchars($request[ count($request) - 1]) == 'users_controller.php' ? NULL : htmlspecialchars($request[ count($request) - 1]);
 
 // connect to the mysql database
 $link = mysqli_connect( $servername, $dbuser, $dbpass, $dbname);
@@ -74,7 +74,6 @@ switch ($method) {
 // excecute SQL statement
 $result = mysqli_query($link,$sql);
 
-//echo "sql: " . $sql;
 //var_dump($result);
  
 // die if SQL statement failed

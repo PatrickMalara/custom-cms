@@ -46,7 +46,7 @@ class UsersPage extends React.Component {
                 first_name: this.edit_user_first_name.current.value,
                 last_name: this.edit_user_last_name.current.value,
                 email: this.edit_user_email.current.value,
-                is_admin: this.edit_user_is_admin.current.checked ? "1" : "0"
+                is_admin: this.edit_user_is_admin.current.checked ? 1 : 0
             } )
         } )
         .then( () => {
