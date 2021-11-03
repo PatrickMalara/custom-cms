@@ -1,57 +1,37 @@
 <?php
+
 include 'MySQLSessionHandler.php';
 
 $the_session_handler = new MySQLSessionHandler();
 session_set_save_handler( $the_session_handler, true);
 
 session_start();
-error_reporting(E_ERROR | E_PARSE);
-//error_reporting(E_ALL);
 
-include "secret.php";
+header('Content-Type: application/json');
 
 // get the HTTP method, path and body of the request
 $method     = $_SERVER[ 'REQUEST_METHOD' ];
-$request    = explode( '/', trim($_SERVER['REQUEST_URI'],'/') );
+$request    = explode( '/', trim($_SERVER['PATH_INFO'],'/') );
 $input      = json_decode( file_get_contents('php://input'), true);
+
+$key = htmlspecialchars($request[ count($request) - 1]) == '' ? NULL : htmlspecialchars($request[ count($request) - 1]);
 
 // connect to the mysql database
 $link = mysqli_connect( $servername, $dbuser, $dbpass, $dbname);
 mysqli_set_charset( $link,'utf8' );
 
-// Only Admins can Delete
-if ( $method == "DELETE" ) {
+if ( $method == "PUT" || $method == "DELETE" ) {
     $sql = "SELECT COUNT(*) FROM users WHERE id = '" . $_SESSION["user_id"] . "' AND is_admin = 1 ";
 
     // excecute SQL statement
     $result = mysqli_query($link, $sql);
 
     if ( mysqli_fetch_assoc($result)["COUNT(*)"] == 0 ) {
-        echo "failing on the is_admin sql " . $_SESSION["user_id"] ;
+        echo "failing on the is_admin sql";
       http_response_code( 403 );
       die();
     }
 }
-
- 
-// retrieve the table and key from the path
-$api_index = 0;
-for ($i = 0; $i < count($request); $i++) {
-    if ( $request[$i] === "api.php") {
-        $api_index = $i;
-        $break;
-    }
-}
-$table  = $request[ $api_index + 1 ];
-$key    = count($request) > ($api_index + 2) ? $request[ $api_index + 2] : NULL;
-
-
-
-if ( $table == "users" ) {
-    http_response_code( 404 );
-    die();   
-}
-
 
 
 $columns = [];
@@ -68,38 +48,26 @@ if ( is_null($input) == false ) {
     );
 }
 
- 
 // build the SET part of the SQL command
 $set = '';
 for ($i = 0; $i < count($columns); $i++) {
-  $set.=($i>0?',':'').'`'.$columns[$i].'`=';
-  $set.=($values[$i]===null?'NULL':'"'.$values[$i].'"');
+
+    if ( $columns[i] != "password" ) {
+      $set.=($i>0?',':'').'`'.$columns[$i].'`=';
+      $set.=($values[$i]===null?'NULL':'"'.$values[$i].'"');
+    }
 }
 
-
-$sql = "SELECT COUNT(*) FROM sessions WHERE session_id = '" . session_id() . "' AND session_data != '' ";
-
-// excecute SQL statement
-$result = mysqli_query($link, $sql);
-
-if ( mysqli_fetch_assoc($result)["COUNT(*)"] == 0 ) {
-    echo "failing on the session_id sql";
-  http_response_code( 403 );
-  die();
-}
-
-
+$sql = "";
  
 // create SQL based on HTTP method
 switch ($method) {
   case 'GET':
-    $sql = "select * from `$table`". (is_null($key) == false ? " WHERE id = $key" : ''); break;
+    $sql = "select id, first_name, last_name, email, is_admin from users ". (is_null($key) == false ? " WHERE id = `$key`" : ''); break;
   case 'PUT':
-    $sql = "update `$table` set $set where id=$key"; break;
-  case 'POST':
-    $sql = "insert into `$table` set $set"; break;
+    $sql = "update users set $set where id=\"$key\""; break;
   case 'DELETE':
-    $sql = "delete from `$table` where id=$key"; break;
+    $sql = "delete from users where id=$key"; break;
 }
 
 
@@ -107,7 +75,7 @@ switch ($method) {
 $result = mysqli_query($link,$sql);
 
 //echo "sql: " . $sql;
-//var_dump($link);
+//var_dump($result);
  
 // die if SQL statement failed
 if ( !$result ) {
@@ -136,3 +104,5 @@ if ($method == 'GET') {
 
 // close mysql connection
 mysqli_close($link);
+
+?>

@@ -17,7 +17,7 @@ $stmt->execute($params);
 
 $result = $stmt->fetchAll();
 
-var_dump( $result );
+//var_dump( $result );
 
 if ( count($result) == 0 ) {
     echo "That email does not exist in our system";
@@ -35,10 +35,11 @@ if ( password_verify( $password, $result[0]["password"] ) === false ) {
 
 $_SESSION["user_id"] = $result[0]["id"];
 
+header("Location: ../settings.php");
+exit;
 echo "Logged in Successfully!";
 echo "User id: " . $result[0]["id"];
 echo "session id: " . session_id();
-header("Location: ../settings.php");
 
 
 ?>

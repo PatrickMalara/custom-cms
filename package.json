@@ -1,0 +1,30 @@
+{
+  "name": "ccms",
+  "version": "1.0.0",
+  "description": "A custom Content Management System",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PatrickMalara/custom-cms.git"
+  },
+  "keywords": [
+    "CMS",
+    "PHP",
+    "Javascript",
+    "Vanilla",
+    "JS"
+  ],
+  "author": "Patrick Malara",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PatrickMalara/custom-cms/issues"
+  },
+  "homepage": "https://github.com/PatrickMalara/custom-cms#readme",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-react-app": "^3.1.2"
+  }
+}
