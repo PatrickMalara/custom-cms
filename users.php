@@ -6,34 +6,30 @@
         
             <i class="bi bi-people"> </i>
 
-            <h3> Users </h3>
+            <h3 id="users_heading"> Users </h3>
 
             <h3> 👋 Welcome, <?php echo $user_full_name; ?> </h3>
 
         </section>
+
         <div style="display:flex; justify-content: end;">
             <a href="backend/logout_controller.php" class="logout-text-btn">Logout</a>
         </div>
 
-        <section class="settings-section"> 
-            Under Construction. Things to unclude
-            <ul>
-                <li>
-                    User CRUD
-                </li>
-                <li>
-                    User Role Assignment 
-                </li>
-            </ul>
+        <br />
 
-            <img src="https://www.cameronsworld.net/img/content/22/1.gif" />
-            <img src="https://www.cameronsworld.net/img/content/22/right-side/10.gif" />
-        </section>
+        <div id="app"> </div>
 
 
     </main>
 
+    <!-- Load React. -->
+    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>  
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 
+    <script src="react/build/UserItem.js"></script>
+    <script src="react/build/UsersPage.js"></script>
     <script>
     </script>
 

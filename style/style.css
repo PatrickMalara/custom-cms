@@ -119,7 +119,7 @@ main {
 
     height: 3rem;
 
-    transition: background-color 100ms ease;
+    transition: background-color 200ms ease-in-out;
 }
 .nav-item:hover { 
     cursor: pointer;
