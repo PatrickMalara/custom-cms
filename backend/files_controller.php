@@ -1,7 +1,5 @@
 <?php
 
-#   @TODO: Make this secure!!!!!!!
-
 include 'MySQLSessionHandler.php';
 
 $the_session_handler = new MySQLSessionHandler();
@@ -41,18 +39,18 @@ switch ($method) {
 
             $path = "../" . htmlspecialchars($_GET['path']);
 
-            // My simple security to make sure the path provided is inside of /files/
-            // @TODO
-            /* if ( strpos(dirname($path), "files/") === false && $path !== "files/" ) {
-                // strpos(dirname($path), "files/") != 0 && $path !== "files/" ) {
+            $real_path_array = explode("\\", realpath($path) );
+
+            // If "files" is in the absolute path, then we can guarantee
+            // that the directory we are in is either Inside "files" of "files" itself
+            // if not, then return a "Not Found" code
+            if ( in_array( "files", $real_path_array ) == false ) {
                 http_response_code(404);
                 return;
-            } */
-            
+            }
 
+            // Scans for Files and Folders
             $scanned_directory = scandir('./'.$path);
-
-
             $response = array();
 
 
@@ -100,7 +98,18 @@ switch ($method) {
         
         if ( isset($input['path']) && isset($input['folder_name']) ) { 
 
+
+
             $new_folder_path = "../" . $input["path"] . $input['folder_name'] . "/";
+
+            $real_path_array = explode("\\", realpath($new_folder_path) );
+            // If "files" is in the absolute path, then we can guarantee
+            // that the directory we are in is either Inside "files" of "files" itself
+            // if not, then return a "Not Found" code
+            if ( in_array( "files", $real_path_array ) == false ) {
+                http_response_code(404);
+                return;
+            }
 
             if ( file_exists( $new_folder_path ) === true) {
                 http_response_code(403);
