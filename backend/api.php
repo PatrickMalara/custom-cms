@@ -11,15 +11,19 @@ error_reporting(E_ERROR | E_PARSE);
 include "secret.php";
 
 // get the HTTP method, path and body of the request
-$method     = $_SERVER[ 'REQUEST_METHOD' ];
-$request    = explode( '/', trim($_SERVER['REQUEST_URI'],'/') );
-$input      = json_decode( file_get_contents('php://input'), true);
+$method     = $_SERVER[ 'REQUEST_METHOD' ];                         // the HTTP Method
+$request    = explode( '/', trim($_SERVER['REQUEST_URI'],'/') );    // the Path
+$input      = json_decode( file_get_contents('php://input'), true); // Body of the Request
 
 // connect to the mysql database
 $link = mysqli_connect( $servername, $dbuser, $dbpass, $dbname);
 mysqli_set_charset( $link,'utf8' );
 
-// Only Admins can Delete
+/* Only Admins can Delete
+ * 
+ * Here we select the COUNT of users WHERE their ID is equal to the user_id of this SESSION
+ * and check if that user_id, tied to this SESSION, has is_admin equal to 1
+ */
 if ( $method == "DELETE" ) {
     $sql = "SELECT COUNT(*) FROM users WHERE id = '" . $_SESSION["user_id"] . "' AND is_admin = 1 ";
 
@@ -33,8 +37,11 @@ if ( $method == "DELETE" ) {
     }
 }
 
- 
-// retrieve the table and key from the path
+/*
+ * Here we try to get the index of 'api.php' in the PATH
+ * This will help us get the Table Name, since the Table Name
+ * will be the next element in the $request.
+ */
 $api_index = 0;
 for ($i = 0; $i < count($request); $i++) {
     if ( $request[$i] === "api.php") {
@@ -42,11 +49,13 @@ for ($i = 0; $i < count($request); $i++) {
         $break;
     }
 }
+
+// Retrieve the Table and Key from the Path
 $table  = $request[ $api_index + 1 ];
-$key    = count($request) > ($api_index + 2) ? $request[ $api_index + 2] : NULL;
+$key    = count($request) > ($api_index + 2) ? $request[ $api_index + 2] : NULL; // api.php/posts/1 -> [ 'site_name', 'backend', api.php', 'posts', 1 ]
 
 
-
+// This API does not CRUD on Users. Other Controllers do...
 if ( $table == "users" ) {
     http_response_code( 404 );
     die();   
@@ -72,8 +81,8 @@ if ( is_null($input) == false ) {
 // build the SET part of the SQL command
 $set = '';
 for ($i = 0; $i < count($columns); $i++) {
-  $set.=($i>0?',':'').'`'.$columns[$i].'`=';
-  $set.=($values[$i]===null?'NULL':'"'.$values[$i].'"');
+  $set .= ($i > 0 ? ',' : '') . '`' . $columns[$i] . '`=';
+  $set .= ($values[$i] === null ? 'NULL' : '"' . $values[$i] . '"');
 }
 
 
