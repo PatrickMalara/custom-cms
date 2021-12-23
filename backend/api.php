@@ -16,8 +16,10 @@ $request    = explode( '/', trim($_SERVER['REQUEST_URI'],'/') );    // the Path
 $input      = json_decode( file_get_contents('php://input'), true); // Body of the Request
 
 // connect to the mysql database
-$link = mysqli_connect( $servername, $dbuser, $dbpass, $dbname);
+$link = mysqli_connect( $servername, $dbuser, $dbpass, $dbname);        // Yes, this is dumb... @TODO fix this please Future Patrick
+$mysqli = new mysqli( $servername, $dbuser, $dbpass, $dbname );
 mysqli_set_charset( $link,'utf8' );
+
 
 /* Only Admins can Delete
  * 
@@ -36,6 +38,7 @@ if ( $method == "DELETE" ) {
       die();
     }
 }
+
 
 /*
  * Here we try to get the index of 'api.php' in the PATH
@@ -77,7 +80,24 @@ if ( is_null($input) == false ) {
     );
 }
 
- 
+//var_dump( $columns );
+//var_dump( $values );
+
+/*
+ * Here we validate the the User's Session has a NON EMPTY SESSION_DATA 
+ * which means that when the user had logged in, their user_id was attached to
+ * the session
+ */
+$sql = "SELECT COUNT(*) FROM sessions WHERE session_id = '" . session_id() . "' AND session_data != '' ";
+
+$result = mysqli_query($link, $sql);
+if ( mysqli_fetch_assoc($result)["COUNT(*)"] == 0 ) {
+    echo "No Session Data tied to Session ID";
+    http_response_code( 403 );
+    die();
+}
+
+
 // build the SET part of the SQL command
 $set = '';
 for ($i = 0; $i < count($columns); $i++) {
@@ -85,61 +105,75 @@ for ($i = 0; $i < count($columns); $i++) {
   $set .= ($values[$i] === null ? 'NULL' : '"' . $values[$i] . '"');
 }
 
+//var_dump( $set );
 
-$sql = "SELECT COUNT(*) FROM sessions WHERE session_id = '" . session_id() . "' AND session_data != '' ";
-
-// excecute SQL statement
-$result = mysqli_query($link, $sql);
-
-if ( mysqli_fetch_assoc($result)["COUNT(*)"] == 0 ) {
-    echo "failing on the session_id sql";
-  http_response_code( 403 );
-  die();
+/* 
+ * Create a Prepared Ready version of the string
+ *
+ */
+$prepared = "";
+$binds = [];
+for ($i = 0; $i < count($columns); $i++) {
+    $prepared .= ($i > 0 ? ',' : '') . '`' . $columns[$i] . '`=';
+    $prepared .= '?';
+    array_push( $binds, $values[$i] );
+}
+$params = "";
+for( $i = 0; $i < count($columns); $i++ ) {
+    $params .= "s";
 }
 
 
- 
-// create SQL based on HTTP method
+// Create SQL based on the HTTP method
 switch ($method) {
-  case 'GET':
-    $sql = "select * from `$table`". (is_null($key) == false ? " WHERE id = $key" : ''); break;
-  case 'PUT':
-    $sql = "update `$table` set $set where id=$key"; break;
-  case 'POST':
-    $sql = "insert into `$table` set $set"; break;
-  case 'DELETE':
-    $sql = "delete from `$table` where id=$key"; break;
+    case 'GET':
+        $sql = "select * from `$table`". (is_null($key) == false ? " WHERE id = ?" : ''); 
+        array_push( $binds, $key);
+        $params .= "i";
+        break;
+    case 'PUT':
+        $sql = "update `$table` set $prepared where id=?";
+        array_push( $binds, $key);
+        $params .= "i";
+        break;
+    case 'POST':
+        $sql = "insert into `$table` set $prepared"; 
+        break;
+    case 'DELETE':
+        $sql = "delete from `$table` where id=?";
+        array_push( $binds, $key);
+        $params .= "i";
+        break;
 }
 
 
-// excecute SQL statement
-$result = mysqli_query($link,$sql);
+// Excecute the prepared SQL statement
+$stmt = $mysqli->prepare($sql);
+$stmt->bind_param($params, ...$binds);
+$stmt->execute();
+$result = $stmt->get_result();
 
+//var_dump( $result->fetch_array(MYSQLI_NUM) );
 //echo "sql: " . $sql;
-//var_dump($link);
+//var_dump($result);
  
-// die if SQL statement failed
-if ( !$result ) {
-  http_response_code( 404 );
-  die( mysqli_error() );
-}
-
  
 // print results, insert id or affected row count
 if ($method == 'GET') {
   if (!$key) echo '[';
 
-  for ($i=0; $i<mysqli_num_rows($result); $i++) {
-    echo ($i>0?',':'').json_encode(mysqli_fetch_object($result));
+  for ( $i = 0; $i < mysqli_num_rows($result); $i++) {
+      // @TODO find out why I have remove every 5th element
+      echo ( $i > 0 && $i % 5 != 0 ? ',' : '' ) . json_encode(mysqli_fetch_object($result));
   }
 
   if (!$key) echo ']';
 
 } elseif ($method == 'POST') {
-  echo mysqli_insert_id($link);
+  echo mysqli_insert_id($result);
 
 } else {
-  echo mysqli_affected_rows($link);
+  echo mysqli_affected_rows($result);
 }
  
 

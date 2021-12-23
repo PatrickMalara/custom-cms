@@ -157,12 +157,15 @@ main {
     border: 3px dotted #e5e5e5;
     cursor: pointer;
 
+    color: green;
+
     transition: all 0.2s ease ;
 }
 
 .clickable {
     filter: brightness(100%);
-    border: 3px solid #FFF;
+    /*border: 3px solid #FFF;*/
+    border: 3px dotted transparent;
     cursor: pointer;
 }
 

@@ -41,6 +41,8 @@ $user_full_name = $result[0]["first_name"] . " " . $result[0]["last_name"];
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+<!--- <meta http-equiv="Content-Security-Policy"
+      content="default-src *;"> -->
 
     <title>
         <?php echo $site_name . " " . $page_name ?> </title>

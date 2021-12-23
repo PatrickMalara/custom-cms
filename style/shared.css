@@ -1,3 +1,17 @@
+.float-right {
+    float: right;
+}
+
+.d-flex {
+    display: flex;
+}
+.justify-between { 
+    justify-content: space-between;
+}
+.align-center {
+    align-items: center;
+}
+
 .flex-between {
     display: flex;
     justify-content: space-between;
@@ -91,4 +105,13 @@ button:hover {
     border-radius: 6px;
 }
 
-
+.thin-item {
+    padding: 0.25rem;
+}
+.column-item {
+    margin-top: 0.5rem;
+}
+.selected-item {
+    font-weight: bold;
+    color: green;
+}
