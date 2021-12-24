@@ -43,7 +43,7 @@ var PagesPage = function (_React$Component) {
                 })
             });
 
-            // We have Updated the Databse, but now we update our state to match the Newly Saved Content
+            // We have Updated the Database, but now we update our state to match the Newly Saved Content
             var section_index = _this.state.sections_array.findIndex(function (section) {
                 return section.id === _this.state.selected_section_id;
             });
@@ -95,6 +95,43 @@ var PagesPage = function (_React$Component) {
             });
         };
 
+        _this.create_new_page = function (new_text) {
+
+            /*
+             * Note * new_text is already .trim() from the GhostItem Component
+             */
+
+            fetch("backend/api.php/pages", {
+                method: "post",
+                body: JSON.stringify({
+                    name: new_text,
+                    content: ""
+                })
+            }).then(function () {
+                // We have Updated the Database, but now we update our state to match the Newly Created Page
+                _this.fetch_pages();
+            });
+        };
+
+        _this.create_new_section = function (new_text) {
+
+            /*
+             * Note * new_text is already .trim() from the GhostItem Component
+             */
+
+            fetch("backend/api.php/sections", {
+                method: "post",
+                body: JSON.stringify({
+                    name: new_text,
+                    content: "",
+                    page_id: _this.state.selected_page_id
+                })
+            }).then(function () {
+                // We have Updated the Database, but now we update our state to match the Newly Created Section 
+                _this.fetch_sections();
+            });
+        };
+
         return _this;
     }
 
@@ -117,6 +154,7 @@ var PagesPage = function (_React$Component) {
                     React.createElement(
                         "div",
                         { className: "shared-item-container" },
+                        React.createElement(GhostItem, { onCreate: this.create_new_page, text: "Create Page" }),
                         this.state.pages_array.map(function (page) {
                             return React.createElement(Item, {
                                 name: page.name,
@@ -144,11 +182,7 @@ var PagesPage = function (_React$Component) {
                         React.createElement(
                             "div",
                             { id: "for-sections_array", className: "sections-selection" },
-                            React.createElement(
-                                "div",
-                                { id: "ghost-section-card", className: "ghost-section-card" },
-                                " New section "
-                            ),
+                            React.createElement(GhostItem, { onCreate: this.create_new_section, text: "Create Section", isThin: "true" }),
                             this.state.sections_array.filter(function (section) {
                                 return section.page_id === _this2.state.selected_page_id;
                             }).map(function (section) {

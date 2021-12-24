@@ -32,6 +32,7 @@
     <script src="https://unpkg.com/pell"></script>
 
     <script src="react/build/Item.js"></script>
+    <script src="react/build/GhostItem.js"></script>
     <script src="react/build/PagesPage.js"></script>
     <script>
     </script>

@@ -34,7 +34,7 @@ class PagesPage extends React.Component {
             } )
         });
 
-        // We have Updated the Databse, but now we update our state to match the Newly Saved Content
+        // We have Updated the Database, but now we update our state to match the Newly Saved Content
         const section_index = this.state.sections_array.findIndex( section => section.id === this.state.selected_section_id );
         this.state.sections_array[ section_index ].content = this.state.pell_text_editor.lastElementChild.innerHTML
 
@@ -86,12 +86,52 @@ class PagesPage extends React.Component {
         } );
     }
 
+    create_new_page = (new_text) => {
+
+        /*
+         * Note * new_text is already .trim() from the GhostItem Component
+         */
+
+        fetch(`backend/api.php/pages`, {
+            method: "post",
+            body: JSON.stringify( {
+                name: new_text,
+                content: ""
+            } )
+        }).then( () => {
+            // We have Updated the Database, but now we update our state to match the Newly Created Page
+            this.fetch_pages();
+        } ) ;
+        
+    }
+
+    create_new_section = (new_text) => {
+
+        /*
+         * Note * new_text is already .trim() from the GhostItem Component
+         */
+
+        fetch(`backend/api.php/sections`, {
+            method: "post",
+            body: JSON.stringify( {
+                name: new_text,
+                content: "",
+                page_id: this.state.selected_page_id
+            } )
+        }).then( () => {
+            // We have Updated the Database, but now we update our state to match the Newly Created Section 
+            this.fetch_sections();
+        } ) ;
+        
+    }
+
     render() {
         return (
             <React.Fragment>
                 <section className="shared-section-container ">
                     <h4 className="h4"> Pages </h4>
                     <div className="shared-item-container">
+                    <GhostItem onCreate={this.create_new_page } text="Create Page" />
                     {
                        
                         this.state.pages_array.map( page => {
@@ -114,7 +154,7 @@ class PagesPage extends React.Component {
                     <h4 className="h4">Edit Page Sections </h4>
                     <div className="d-flex justify-between"> 
                         <div id="for-sections_array" className="sections-selection">
-                            <div id="ghost-section-card" className="ghost-section-card"> New section </div>
+                            <GhostItem onCreate={this.create_new_section } text="Create Section" isThin="true" />
                             {
                                
                                 this.state.sections_array
@@ -136,7 +176,11 @@ class PagesPage extends React.Component {
                             }
                         </div>
                         <div className="sections-editor">
-                            <button className="float-right" onClick={ () => this.save_section_content() }> Save Changes </button>
+                            { 
+                                if ( this.state.selected_section_id !== undefined ) {
+                                    return ( <button className="float-right" onClick={ () => this.save_section_content() }> Save Changes </button> );
+                                }                                
+                            }
                             <div id="bind-section_content"> </div>
                         </div>
                     </div>
