@@ -41,7 +41,7 @@ class GhostItem extends React.Component {
             );
         } else if ( this.state.is_editing === true ) {
                 return (
-                    <div className={`shared-ghost-item-card clickable ${thinStyle}`}>
+                    <div className={`shared-ghost-item-card clickable ${thinStyle}`} onMouseLeave={this.toggle_transform}>
 
                     <input id="new-page-text-input" ref={this.new_text} autoFocus tabIndex="0" className="form-control" placeholder="New..." />
 

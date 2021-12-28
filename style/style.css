@@ -323,10 +323,11 @@ main {
 
     background: rgb(240,240,240);
     background: linear-gradient(0deg, rgba(246,246,246,1) 0%, rgba(248,248,248,1) 100%);
+
 }
 
 .item-card-icon {
-    display: none;
+    /*display: none; */
     color: #333;
     background-color: white;
 

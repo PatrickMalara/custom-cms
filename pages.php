@@ -6,52 +6,36 @@
         
             <i class="bi bi-layout-text-window-reverse"> </i>
 
-            <h3> Editing <span id="current-page-name" style="color: purple;"> Home <span> </h3>
+            <h3 id="users_heading"> Pages </h3>
 
             <h3> 👋 Welcome, <?php echo $user_full_name; ?> </h3>
 
         </section>
+
         <div style="display:flex; justify-content: end;">
             <a href="backend/logout_controller.php" class="logout-text-btn">Logout</a>
         </div>
 
+        <br />
 
-        <section class="pages-section" >
+        <div id="app"> </div>
 
-            <h3> Pages </h3>
-
-            <br />
-
-            <div id="for-pages_array" class="item-container">
-            </div>
-            
-        </section>
-
-
-        <section class="sections-section" >
-
-            <h3> Sections </h3>
-
-            <br />
-
-            <div class="sections-container">
-                <div id="for-sections_array" class="sections-selection">
-                    <div id="ghost-section-card" class="ghost-section-card"> New section </div>
-                </div>
-
-                <div class="sections-editor">
-                    <button onclick="update_section_record_content()" class="" style="float: right; margin-top: -2.5rem;"> Save Changes </button>
-                    <div id="bind-selected_section_content"> </div>
-                </div>
-            </div>
-            
-        </section>
 
     </main>
 
+    <!-- Load React. -->
+    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>  
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-    <script src="javascript/pages.js"></script>
-    
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/pell"></script>
+
+    <script src="react/build/Item.js"></script>
+    <script src="react/build/GhostItem.js"></script>
+    <script src="react/build/PagesPage.js"></script>
+    <script>
+    </script>
+
   </body>
 </html>

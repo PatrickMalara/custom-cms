@@ -11,6 +11,53 @@ class PagesPage extends React.Component {
         pell_text_editor: undefined
     } 
 
+    delete_page = ( page_id ) => {
+        if ( confirm( "Are you sure you want to delete this Page?") === false ) {
+            return;
+        }
+
+
+        fetch(`backend/api.php/pages/${page_id}`, {
+            method: "delete"
+        })
+        .then( this.fetch_pages );  // I know this isnt performant...
+    }
+
+    delete_section = ( section_id ) => {
+
+        if ( confirm( "Are you sure you want to delete this Section?") === false ) {
+            return;
+        }
+
+        fetch(`backend/api.php/sections/${section_id}`, {
+            method: "delete"
+        })
+        .then( this.fetch_section);  // I know this isnt performant...
+    }
+
+    save_page_name = (new_name) => {
+
+       fetch(`backend/api.php/pages/${this.state.selected_page_id}`, {
+            method: "put",
+            body: JSON.stringify( {
+                name: new_name
+            } )
+        })
+        .then( this.fetch_pages );  // I know this isnt performant...
+ 
+    }
+
+    save_section_name = (new_name) => {
+
+       fetch(`backend/api.php/sections/${this.state.selected_section_id}`, {
+            method: "put",
+            body: JSON.stringify( {
+                name: new_name
+            } )
+        })
+        .then( this.fetch_sections);  // I know this isnt performant...
+ 
+    }
 
     load_page_sections = (page_id) => {
 
@@ -142,6 +189,8 @@ class PagesPage extends React.Component {
                                     selected={ this.state.selected_page_id === page.id }
                                     icon="bi-layout-text-window-reverse"
                                     onClick={ () => this.load_page_sections(page.id) } 
+                                    onDelete={ () => this.delete_page(page.id) } 
+                                    onUpdated={ this.save_page_name } 
                                 /> 
                             )
                         } )
@@ -169,6 +218,8 @@ class PagesPage extends React.Component {
                                             column="true"
                                             icon="bi-text-paragraph"
                                             onClick={ () => this.load_section_content(section.id) } 
+                                            onDelete={ () => this.delete_section(section.id) } 
+                                            onUpdated={ this.save_section_name } 
                                         /> 
                                     )
                                 } )
@@ -176,11 +227,7 @@ class PagesPage extends React.Component {
                             }
                         </div>
                         <div className="sections-editor">
-                            { 
-                                if ( this.state.selected_section_id !== undefined ) {
-                                    return ( <button className="float-right" onClick={ () => this.save_section_content() }> Save Changes </button> );
-                                }                                
-                            }
+                            <button className="float-right" onClick={ () => this.save_section_content() }> Save Changes </button>
                             <div id="bind-section_content"> </div>
                         </div>
                     </div>

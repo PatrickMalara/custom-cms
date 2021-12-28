@@ -22,6 +22,47 @@ var PagesPage = function (_React$Component) {
             pell_text_editor: undefined
         };
 
+        _this.delete_page = function (page_id) {
+            if (confirm("Are you sure you want to delete this Page?") === false) {
+                return;
+            }
+
+            fetch("backend/api.php/pages/" + page_id, {
+                method: "delete"
+            }).then(_this.fetch_pages); // I know this isnt performant...
+        };
+
+        _this.delete_section = function (section_id) {
+
+            if (confirm("Are you sure you want to delete this Section?") === false) {
+                return;
+            }
+
+            fetch("backend/api.php/sections/" + section_id, {
+                method: "delete"
+            }).then(_this.fetch_section); // I know this isnt performant...
+        };
+
+        _this.save_page_name = function (new_name) {
+
+            fetch("backend/api.php/pages/" + _this.state.selected_page_id, {
+                method: "put",
+                body: JSON.stringify({
+                    name: new_name
+                })
+            }).then(_this.fetch_pages); // I know this isnt performant...
+        };
+
+        _this.save_section_name = function (new_name) {
+
+            fetch("backend/api.php/sections/" + _this.state.selected_section_id, {
+                method: "put",
+                body: JSON.stringify({
+                    name: new_name
+                })
+            }).then(_this.fetch_sections); // I know this isnt performant...
+        };
+
         _this.load_page_sections = function (page_id) {
 
             _this.state.pell_text_editor.lastElementChild.innerHTML = "";
@@ -163,7 +204,11 @@ var PagesPage = function (_React$Component) {
                                 icon: "bi-layout-text-window-reverse",
                                 onClick: function onClick() {
                                     return _this2.load_page_sections(page.id);
-                                }
+                                },
+                                onDelete: function onDelete() {
+                                    return _this2.delete_page(page.id);
+                                },
+                                onUpdated: _this2.save_page_name
                             });
                         })
                     )
@@ -195,7 +240,11 @@ var PagesPage = function (_React$Component) {
                                     icon: "bi-text-paragraph",
                                     onClick: function onClick() {
                                         return _this2.load_section_content(section.id);
-                                    }
+                                    },
+                                    onDelete: function onDelete() {
+                                        return _this2.delete_section(section.id);
+                                    },
+                                    onUpdated: _this2.save_section_name
                                 });
                             })
                         ),

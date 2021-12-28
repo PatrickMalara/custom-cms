@@ -68,7 +68,7 @@ var GhostItem = function (_React$Component) {
             } else if (this.state.is_editing === true) {
                 return React.createElement(
                     'div',
-                    { className: 'shared-ghost-item-card clickable ' + thinStyle },
+                    { className: 'shared-ghost-item-card clickable ' + thinStyle, onMouseLeave: this.toggle_transform },
                     React.createElement('input', { id: 'new-page-text-input', ref: this.new_text, autoFocus: true, tabIndex: '0', className: 'form-control', placeholder: 'New...' }),
                     React.createElement('i', { onClick: this.addition_clicked, className: 'bi bi-plus clickable-icon float-right ml-05 ghost-button', tabIndex: '0' }),
                     React.createElement('i', { onClick: this.toggle_transform, className: 'bi bi-arrow-left-short clickable-icon float-right ghost-button' })
